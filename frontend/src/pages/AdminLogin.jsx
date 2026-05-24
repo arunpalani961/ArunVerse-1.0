@@ -63,9 +63,11 @@ const AdminLogin = () => {
             </button>
           </form>
 
-          <p className="text-center text-gray-500 text-xs mt-6">
-            Default password: admin123
-          </p>
+          {import.meta.env.DEV && (
+            <p className="text-center text-gray-500 text-xs mt-6">
+              Default password: admin123
+            </p>
+          )}
         </div>
       </div>
     </div>
