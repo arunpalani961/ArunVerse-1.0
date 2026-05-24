@@ -4,10 +4,14 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID;
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID;
 const JWT_SECRET = process.env.JWT_SECRET || (isProduction ? undefined : 'your_super_secret_key_change_in_production');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (isProduction ? undefined : 'admin123');
-const DEFAULT_PRODUCTION_ORIGINS = ['https://arunverse.com', 'https://www.arunverse.com'];
+const DEFAULT_PRODUCTION_ORIGINS = [
+  'https://arunverse.com',
+  'https://www.arunverse.com',
+  'https://*.vercel.app',
+];
 const DEFAULT_DEVELOPMENT_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 const allowedOrigins = (process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',')
@@ -20,10 +24,19 @@ if (!JWT_SECRET || !ADMIN_PASSWORD) {
   throw new Error('JWT_SECRET and ADMIN_PASSWORD must be set in production');
 }
 
+const isAllowedOrigin = (origin) => allowedOrigins.some((allowedOrigin) => {
+  if (allowedOrigin.includes('*')) {
+    const escapedOrigin = allowedOrigin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`^${escapedOrigin.replace(/\\\*/g, '.*')}$`);
+    return pattern.test(origin);
+  }
+  return allowedOrigin === origin;
+});
+
 // Middleware
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || isAllowedOrigin(origin)) {
       return callback(null, true);
     }
     return callback(new Error('Not allowed by CORS'));

@@ -51,25 +51,19 @@ git branch -M main
 git push -u origin main
 ```
 
-### Phase 2: Deploy Backend to Railway
+### Phase 2: Deploy Backend to Render
 
 ```bash
 # Option 1: Via Web Interface (Recommended)
-# 1. Go to https://railway.app
+# 1. Go to https://render.com
 # 2. Login with GitHub
-# 3. Create New Project → Deploy from GitHub
+# 3. New → Blueprint
 # 4. Select arunverse-1.0 repo
-# 5. Set root/service directory to backend
-# 6. Add Environment Variables:
+# 5. Render reads render.yaml
+# 6. Add/confirm Environment Variables:
 #    - JWT_SECRET = [generate-random-string]
 #    - ADMIN_PASSWORD = [your-secure-password]
-#    - CORS_ORIGIN = https://arunverse.com,https://www.arunverse.com
-
-# Option 2: Via Railway CLI
-npm install -g @railway/cli
-railway login
-railway init
-railway up
+#    - CORS_ORIGIN = https://arunverse.com,https://www.arunverse.com,https://*.vercel.app
 ```
 
 ### Phase 3: Deploy Frontend to Vercel
@@ -81,7 +75,7 @@ railway up
 # 3. Create New Project → Import arunverse-1.0
 # 4. Root Directory: frontend
 # 5. Environment Variable:
-#    - VITE_API_URL = https://api.arunverse.com/api
+#    - VITE_API_URL = https://arunverse-backend.onrender.com/api
 # 6. Click Deploy
 
 # Option 2: Via Vercel CLI
@@ -111,12 +105,12 @@ In your domain registrar:
 3. Save (takes 24-48 hours)
 ```
 
-#### Step C: Point API Subdomain to Railway
+#### Step C: Point API Subdomain to Render
 ```
 In your domain registrar (DNS records):
 1. Add CNAME record:
    - Hostname: api
-   - Value: [Railway custom-domain target]
+   - Value: [Render custom-domain target]
    - TTL: 3600
 2. Save
 ```
@@ -125,17 +119,17 @@ In your domain registrar (DNS records):
 
 ## Environment Variables Reference
 
-### Backend (.env or Railway Variables)
+### Backend (Render Variables)
 ```
-PORT=3001 (Railway sets automatically)
+PORT=3001 (Render sets automatically)
 JWT_SECRET=your-super-secret-jwt-key-here-change-this
 ADMIN_PASSWORD=your-secure-admin-password-here
-CORS_ORIGIN=https://arunverse.com,https://www.arunverse.com
+CORS_ORIGIN=https://arunverse.com,https://www.arunverse.com,https://*.vercel.app
 ```
 
 ### Frontend (.env.production or Vercel)
 ```
-VITE_API_URL=https://api.arunverse.com/api
+VITE_API_URL=https://arunverse-backend.onrender.com/api
 ```
 
 ---
@@ -196,8 +190,7 @@ Open browser console → test product clicks
 
 ### 2. Monitor & Debug
 ```bash
-# View Railway logs
-railway logs
+# View Render logs in the Render dashboard
 
 # View Vercel logs
 vercel logs
@@ -211,7 +204,7 @@ whatsmydns.net (search: arunverse.com)
 # Export products regularly
 curl https://api.arunverse.com/api/products > products-backup.json
 
-# Or setup automated backups in Railway
+# Or setup automated backups after adding a real database
 ```
 
 ---
@@ -227,7 +220,7 @@ git push origin main
 
 # Automatic deployment:
 # ✅ Vercel redeploys frontend automatically
-# ✅ Railway redeploys backend automatically
+# ✅ Render redeploys backend automatically
 # (No manual deployment needed!)
 ```
 
@@ -254,7 +247,7 @@ cd frontend
 npm run build  # Check bundle size
 
 # Backend optimization
-# Monitor Railway CPU/Memory usage
+# Monitor Render CPU/Memory usage
 # Consider adding caching
 # Add database instead of in-memory storage
 ```
@@ -263,11 +256,11 @@ npm run build  # Check bundle size
 
 ## Useful Links
 
-- Railway Docs: https://railway.app/docs
+- Render Docs: https://render.com/docs
 - Vercel Docs: https://vercel.com/docs
 - Domain Setup: Contact domain registrar support
 - DNS Check: https://whatsmydns.net
-- Free SSL: Vercel & Railway provide automatically
+- Free SSL: Vercel & Render provide automatically
 
 ---
 
@@ -275,8 +268,8 @@ npm run build  # Check bundle size
 
 - **Frontend URL:** https://arunverse.com
 - **Admin URL:** https://arunverse.com/admin/login
-- **API URL:** https://api.arunverse.com/api
-- **Railway Dashboard:** https://railway.app
+- **API URL:** https://arunverse-backend.onrender.com/api
+- **Render Dashboard:** https://render.com
 - **Vercel Dashboard:** https://vercel.com
 
 ---

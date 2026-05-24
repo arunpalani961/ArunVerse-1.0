@@ -9,18 +9,19 @@
 
 ---
 
-## ✅ Step 1: Deploy Backend (Railway)
+## ✅ Step 1: Deploy Backend (Render)
 
-- [ ] Create Railway account at railway.app
+- [ ] Create Render account at render.com
 - [ ] Connect GitHub repository
-- [ ] Set Railway root/service directory to `backend`
-- [ ] Railway auto-deploys backend
-- [ ] Get Railway API URL (e.g., https://arunverse-api.railway.app)
-- [ ] Set environment variables in Railway:
+- [ ] Create a Web Service or Blueprint from `render.yaml`
+- [ ] Confirm root directory is `backend`
+- [ ] Render auto-deploys backend
+- [ ] Get Render API URL (e.g., https://arunverse-backend.onrender.com)
+- [ ] Set environment variables in Render:
   - [ ] `JWT_SECRET` = your secret key
   - [ ] `ADMIN_PASSWORD` = your admin password
-  - [ ] `CORS_ORIGIN` = https://arunverse.com,https://www.arunverse.com
-- [ ] Test backend: curl https://your-railway-url/api/products
+  - [ ] `CORS_ORIGIN` = https://arunverse.com,https://www.arunverse.com,https://*.vercel.app
+- [ ] Test backend: curl https://your-render-url/api/products
 
 ---
 
@@ -30,7 +31,7 @@
 - [ ] Connect GitHub repository
 - [ ] Set root directory to `frontend`
 - [ ] Add environment variable in Vercel:
-  - [ ] `VITE_API_URL` = your Railway API URL
+  - [ ] `VITE_API_URL` = your Render API URL with `/api` at the end
 - [ ] Vercel auto-deploys
 - [ ] Get Vercel URL (e.g., https://arunverse.vercel.app)
 
@@ -44,8 +45,8 @@
 - [ ] Note the nameserver records provided
 - [ ] Update domain registrar's nameservers
 
-### For Railway (Backend API - api.arunverse.com)
-- [ ] In Railway dashboard → Settings → Custom Domain
+### For Render (Backend API - api.arunverse.com)
+- [ ] In Render dashboard → Settings → Custom Domains
 - [ ] Add: api.arunverse.com
 - [ ] Add CNAME records in domain registrar
 
@@ -99,7 +100,7 @@
 ### If products don't load:
 1. Check browser console for errors
 2. Verify VITE_API_URL in Vercel is correct
-3. Check Railway logs for errors
+3. Check Render logs for errors
 4. Ensure CORS is enabled in backend
 
 ### If domain doesn't resolve:
@@ -109,16 +110,16 @@
 4. Flush browser DNS cache
 
 ### If admin login fails:
-1. Check ADMIN_PASSWORD environment variable in Railway
+1. Check ADMIN_PASSWORD environment variable in Render
 2. Verify JWT_SECRET is set
 3. Clear browser localStorage
-4. Check Railway logs
+4. Check Render logs
 
 ---
 
 ## 📝 Notes
 
-- **Railway URL Example:** https://arunverse-api-prod.railway.app/api
+- **Render URL Example:** https://arunverse-backend.onrender.com/api
 - **Vercel URL Example:** https://arunverse.vercel.app
 - **Final URLs:**
   - Frontend: https://arunverse.com
@@ -130,7 +131,7 @@
 ## 💡 Cost Estimate
 
 - **Vercel:** FREE (unlimited for hobby projects)
-- **Railway:** FREE tier ($5/month credit) - sufficient for small projects
+- **Render:** Free web service - sufficient for demos and small projects, but sleeps when idle
 - **Domain:** $10-15/year OR FREE (.tk, .ml, .ga)
 - **TOTAL:** ~$120/year for domain (optional free tier available)
 
