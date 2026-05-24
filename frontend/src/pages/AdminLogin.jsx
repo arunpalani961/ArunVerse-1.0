@@ -25,23 +25,23 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#eaeded] text-[#111827] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl border border-purple-500/20 p-8 shadow-2xl">
-          <h1 className="text-3xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+        <div className="bg-white rounded-md border border-gray-200 p-8 shadow-lg">
+          <h1 className="text-3xl font-bold text-center mb-2 text-[#131921]">
             Admin Portal
           </h1>
-          <p className="text-center text-gray-400 mb-8">ArunVerse 1.0</p>
+          <p className="text-center text-gray-600 mb-8">ArunVerse 1.0</p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Admin Password
               </label>
               <input
@@ -49,7 +49,7 @@ const AdminLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter admin password"
-                className="w-full px-4 py-3 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 transition"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded text-[#111827] placeholder-gray-500 focus:outline-none focus:border-[#ff9900] transition"
                 disabled={loading}
               />
             </div>
@@ -57,7 +57,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-3 bg-[#ffd814] text-[#111827] rounded-full hover:bg-[#f7ca00] transition-all duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed border border-[#fcd200]"
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>

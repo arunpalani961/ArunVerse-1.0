@@ -11,26 +11,34 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md bg-black/90 border-b border-purple-500/30">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-300">
-          ArunVerse 1.0
+    <nav className="sticky top-0 z-50 bg-[#131921] border-b border-[#febd69]/40 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <Link to="/" className="min-w-0">
+          <span className="block text-2xl font-bold text-white leading-tight">
+            ArunVerse
+          </span>
+          <span className="block text-xs sm:text-sm text-[#febd69] leading-tight">
+            Products Worth Your Click
+          </span>
         </Link>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           {isAdmin && (
             <>
-              <Link to="/admin" className="px-4 py-2 text-white hover:text-purple-400 transition">
+              <Link to="/admin" className="px-4 py-2 text-white hover:text-[#febd69] transition">
                 Dashboard
               </Link>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition"
+                className="px-4 py-2 bg-[#febd69] text-[#111827] rounded hover:bg-[#f3a847] transition font-semibold"
               >
                 Logout
               </button>
             </>
           )}
+          <span className="whitespace-nowrap text-[11px] sm:text-xs text-gray-300">
+            Version 1.0
+          </span>
         </div>
       </div>
     </nav>

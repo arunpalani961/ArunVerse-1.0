@@ -59,58 +59,30 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-purple-950/30 to-black text-white overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full filter blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-600/10 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative py-24 px-4 text-center z-10">
-        {/* Decorative top accent */}
-        <div className="flex justify-center mb-8">
-          <div className="h-1 w-24 bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
-        </div>
-        
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-300 drop-shadow-2xl animate-bounce" style={{ animationDuration: '3s' }}>
-          ArunVerse 1.0
-        </h1>
-        
-        <div className="relative inline-block mb-12">
-          <div className="absolute -inset-2 bg-gradient-to-r from-purple-600/50 to-pink-600/50 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-1000"></div>
-          <p className="relative text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-300">
-            Discover Amazing Products
-          </p>
-        </div>
-
-        {/* Decorative bottom accent */}
-        <div className="flex justify-center mt-8">
-          <div className="h-1 w-24 bg-gradient-to-r from-transparent via-pink-500 to-transparent"></div>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#eaeded] text-[#111827] overflow-hidden">
 
       {/* Search Section */}
-      <div className="max-w-7xl mx-auto px-4 mb-12 sticky top-20 z-40 py-4 bg-black/80 backdrop-blur-md rounded-xl border border-purple-500/20">
-        <input
-          type="text"
-          placeholder="🔍 Search products..."
-          value={search}
-          onChange={handleSearchChange}
-          className="w-full px-6 py-3 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 transition"
-        />
+      <div className="max-w-7xl mx-auto px-4 pt-8 md:pt-10 mb-8">
+        <div className="bg-[#232f3e] rounded-md shadow p-3 md:p-4">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={handleSearchChange}
+            className="w-full px-5 py-3 bg-white border-2 border-transparent rounded text-[#111827] placeholder-gray-500 focus:outline-none focus:border-[#ff9900] transition"
+          />
+        </div>
       </div>
 
       {/* Category Filter */}
-      <div className="max-w-7xl mx-auto px-4 mb-12">
+      <div className="max-w-7xl mx-auto px-4 mb-10">
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => handleCategoryChange('all')}
             className={`px-4 py-2 rounded-full transition ${
               category === 'all'
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                : 'bg-gray-900 text-gray-300 hover:text-white border border-gray-700'
+                ? 'bg-[#ff9900] text-[#111827] font-semibold'
+                : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
             }`}
           >
             All
@@ -121,8 +93,8 @@ const Home = () => {
               onClick={() => handleCategoryChange(cat)}
               className={`px-4 py-2 rounded-full transition ${
                 category === cat
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                  : 'bg-gray-900 text-gray-300 hover:text-white border border-gray-700'
+                  ? 'bg-[#ff9900] text-[#111827] font-semibold'
+                  : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
               }`}
             >
               {cat}
@@ -151,7 +123,7 @@ const Home = () => {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-500/30 transition"
+                    className="px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
                 >
                   Previous
                 </button>
@@ -174,8 +146,8 @@ const Home = () => {
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-3 py-2 rounded-lg transition ${
                         currentPage === pageNum
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                          : 'bg-gray-900 text-gray-300 hover:text-white border border-gray-700'
+                          ? 'bg-[#ff9900] text-[#111827] font-semibold'
+                          : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
                       }`}
                     >
                       {pageNum}
@@ -186,7 +158,7 @@ const Home = () => {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-500/30 transition"
+                  className="px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
                 >
                   Next
                 </button>
@@ -195,7 +167,7 @@ const Home = () => {
           </>
         ) : (
           <div className="text-center py-12">
-            <p className="text-xl text-gray-400">No products found</p>
+            <p className="text-xl text-gray-600">No products found</p>
           </div>
         )}
       </div>
