@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../api/config';
 import ProductCard from '../components/ProductCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -59,27 +59,27 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#eaeded] text-[#111827] overflow-hidden">
+    <div className="min-h-screen bg-[#eaeded] text-[#111827] overflow-x-hidden">
 
       {/* Search Section */}
-      <div className="max-w-7xl mx-auto px-4 pt-8 md:pt-10 mb-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 md:pt-10 mb-4 sm:mb-6 md:mb-8">
         <div className="bg-[#232f3e] rounded-md shadow p-3 md:p-4">
           <input
             type="text"
             placeholder="Search products..."
             value={search}
             onChange={handleSearchChange}
-            className="w-full px-5 py-3 bg-white border-2 border-transparent rounded text-[#111827] placeholder-gray-500 focus:outline-none focus:border-[#ff9900] transition"
+            className="w-full px-4 sm:px-5 py-3 bg-white border-2 border-transparent rounded text-[#111827] placeholder-gray-500 focus:outline-none focus:border-[#ff9900] transition"
           />
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="max-w-7xl mx-auto px-4 mb-10">
-        <div className="flex flex-wrap gap-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 mb-5 sm:mb-7 md:mb-10">
+        <div className="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0">
           <button
             onClick={() => handleCategoryChange('all')}
-            className={`px-4 py-2 rounded-full transition ${
+            className={`min-h-11 shrink-0 px-5 py-2 rounded-full text-sm sm:text-base transition ${
               category === 'all'
                 ? 'bg-[#ff9900] text-[#111827] font-semibold'
                 : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
@@ -91,7 +91,7 @@ const Home = () => {
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`px-4 py-2 rounded-full transition ${
+              className={`min-h-11 shrink-0 px-5 py-2 rounded-full text-sm sm:text-base transition ${
                 category === cat
                   ? 'bg-[#ff9900] text-[#111827] font-semibold'
                   : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
@@ -104,14 +104,14 @@ const Home = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-4 pb-20">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 pb-14 sm:pb-20">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
             <LoadingSkeleton count={12} />
           </div>
         ) : products.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6 mb-8 sm:mb-12">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -119,11 +119,11 @@ const Home = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 flex-wrap">
+              <div className="flex justify-center items-center gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible sm:pb-0">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                    className="px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
+                  className="min-h-11 shrink-0 px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
                 >
                   Previous
                 </button>
@@ -144,7 +144,7 @@ const Home = () => {
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`px-3 py-2 rounded-lg transition ${
+                      className={`min-h-11 min-w-11 shrink-0 px-3 py-2 rounded-lg transition ${
                         currentPage === pageNum
                           ? 'bg-[#ff9900] text-[#111827] font-semibold'
                           : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
@@ -158,7 +158,7 @@ const Home = () => {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
+                  className="min-h-11 shrink-0 px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
                 >
                   Next
                 </button>
