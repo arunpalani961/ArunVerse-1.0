@@ -30,14 +30,14 @@ const ProductCard = ({ product }) => {
       </button>
 
       {/* Content Container */}
-      <div className="pt-2 sm:p-5 md:p-6 flex min-h-[146px] sm:min-h-0 flex-col h-full justify-between">
+      <div className="pt-2 sm:p-5 md:p-6 flex min-h-[120px] sm:min-h-[188px] flex-col h-full justify-between">
         {/* Header */}
         <div>
           <div className="mb-1 sm:mb-2">
             <button
               type="button"
               onClick={handleClick}
-              className="min-h-[38px] w-full text-left text-[15px] sm:text-lg font-normal sm:font-bold leading-snug text-[#202124] sm:text-[#111827] line-clamp-2 underline-offset-4 hover:text-[#b45309] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff9900] focus-visible:ring-offset-2"
+              className="min-h-[38px] sm:min-h-[56px] w-full text-left text-[15px] sm:text-lg font-normal sm:font-bold leading-snug text-[#202124] sm:text-[#111827] line-clamp-2 underline-offset-4 hover:text-[#b45309] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff9900] focus-visible:ring-offset-2"
             >
               {product.title}
             </button>
@@ -45,7 +45,7 @@ const ProductCard = ({ product }) => {
           <button
             type="button"
             onClick={handleClick}
-            className="block w-full min-h-[76px] text-left text-[13px] sm:text-sm font-semibold text-[#111827] sm:text-gray-600 line-clamp-4 sm:line-clamp-3 hover:text-[#374151] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff9900] focus-visible:ring-offset-2"
+            className="block w-full min-h-[58px] sm:min-h-[60px] text-left text-[13px] sm:text-sm font-semibold text-[#111827] sm:text-gray-600 line-clamp-3 hover:text-[#374151] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff9900] focus-visible:ring-offset-2"
           >
             {product.description}
           </button>

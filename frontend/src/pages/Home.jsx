@@ -119,7 +119,7 @@ const Home = () => {
       </div>
 
       {/* Category Filter */}
-      <div className={`${showMobileCategories ? 'block' : 'hidden'} sm:block max-w-7xl mx-auto px-5 sm:px-4 mb-5 sm:mb-7 md:mb-10`}>
+      <div className={`${showMobileCategories ? 'block' : 'hidden'} sm:block max-w-7xl mx-auto px-5 sm:px-4 mt-3 sm:mt-0 mb-5 sm:mb-7 md:mb-10`}>
         <div className="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0">
           <button
             onClick={() => handleCategoryChange('all')}
