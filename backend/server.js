@@ -153,6 +153,22 @@ const initDatabase = async () => {
     )
   `);
 
+  // Add display_order column if it doesn't exist (migration for existing databases)
+  try {
+    await pool.query(`
+      ALTER TABLE products
+      ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0
+    `);
+    console.log('Added display_order column to products table');
+  } catch (err) {
+    if (err.code === '42701') {
+      // Column already exists, ignore
+      console.log('display_order column already exists');
+    } else {
+      console.error('Error adding display_order column:', err.message);
+    }
+  }
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS categories (
       id SERIAL PRIMARY KEY,
@@ -264,15 +280,35 @@ const getProducts = async ({ page, limit, category, search, sort = 'custom' }) =
   const total = countResult.rows[0].total;
 
   values.push(limit, (page - 1) * limit);
-  const listResult = await pool.query(
-    `SELECT id, title, description, image, link, category, clicks, display_order, created_at
-     FROM products
-     ${whereSql}
-     ORDER BY ${PRODUCT_SORTS[safeSort].sql}
-     LIMIT $${values.length - 1}
-     OFFSET $${values.length}`,
-    values
-  );
+  
+  let listResult;
+  try {
+    listResult = await pool.query(
+      `SELECT id, title, description, image, link, category, clicks, COALESCE(display_order, 0) as display_order, created_at
+       FROM products
+       ${whereSql}
+       ORDER BY ${PRODUCT_SORTS[safeSort].sql}
+       LIMIT $${values.length - 1}
+       OFFSET $${values.length}`,
+      values
+    );
+  } catch (err) {
+    if (err.code === '42703') {
+      // Column doesn't exist, fetch without display_order
+      console.warn('display_order column not found, using fallback query');
+      listResult = await pool.query(
+        `SELECT id, title, description, image, link, category, clicks, created_at
+         FROM products
+         ${whereSql}
+         ORDER BY ${PRODUCT_SORTS[safeSort].sql}
+         LIMIT $${values.length - 1}
+         OFFSET $${values.length}`,
+        values
+      );
+    } else {
+      throw err;
+    }
+  }
 
   return {
     products: listResult.rows.map(mapProduct),
@@ -287,11 +323,24 @@ const getProductById = async (id) => {
     return products.find(p => p.id === id);
   }
 
-  const { rows } = await pool.query(
-    'SELECT id, title, description, image, link, category, clicks, display_order, created_at FROM products WHERE id = $1',
-    [id]
-  );
-  return rows[0] ? mapProduct(rows[0]) : null;
+  let result;
+  try {
+    result = await pool.query(
+      'SELECT id, title, description, image, link, category, clicks, COALESCE(display_order, 0) as display_order, created_at FROM products WHERE id = $1',
+      [id]
+    );
+  } catch (err) {
+    if (err.code === '42703') {
+      // Column doesn't exist, fetch without display_order
+      result = await pool.query(
+        'SELECT id, title, description, image, link, category, clicks, created_at FROM products WHERE id = $1',
+        [id]
+      );
+    } else {
+      throw err;
+    }
+  }
+  return result.rows[0] ? mapProduct(result.rows[0]) : null;
 };
 
 const incrementProductClick = async (id) => {
