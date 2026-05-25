@@ -13,5 +13,7 @@ services:
         generateValue: true
       - key: ADMIN_PASSWORD
         sync: false
+      - key: DATABASE_URL
+        sync: false
       - key: CORS_ORIGIN
         value: https://arunverse.com,https://www.arunverse.com,https://*.vercel.app

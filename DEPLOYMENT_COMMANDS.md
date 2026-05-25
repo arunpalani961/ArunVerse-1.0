@@ -63,6 +63,7 @@ git push -u origin main
 # 6. Add/confirm Environment Variables:
 #    - JWT_SECRET = [generate-random-string]
 #    - ADMIN_PASSWORD = [your-secure-password]
+#    - DATABASE_URL = [your-supabase-or-neon-postgres-url]
 #    - CORS_ORIGIN = https://arunverse.com,https://www.arunverse.com,https://*.vercel.app
 ```
 
@@ -124,6 +125,7 @@ In your domain registrar (DNS records):
 PORT=3001 (Render sets automatically)
 JWT_SECRET=your-super-secret-jwt-key-here-change-this
 ADMIN_PASSWORD=your-secure-admin-password-here
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres
 CORS_ORIGIN=https://arunverse.com,https://www.arunverse.com,https://*.vercel.app
 ```
 
