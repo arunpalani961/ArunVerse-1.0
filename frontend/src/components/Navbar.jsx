@@ -15,24 +15,14 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-white sm:bg-[#131921] border-b border-gray-200 sm:border-[#febd69]/40 shadow-sm sm:shadow-md">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 h-16 sm:h-auto sm:py-3 grid grid-cols-[44px_1fr_92px] sm:flex items-center justify-between gap-3">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="flex h-11 w-11 items-center justify-center text-[#111827] sm:hidden"
-          aria-label="Go back"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5" />
-            <path d="m12 19-7-7 7-7" />
-          </svg>
-        </button>
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 h-[76px] sm:h-auto sm:py-3 grid grid-cols-[44px_1fr_44px] sm:flex items-center justify-between gap-3">
+        <span className="sm:hidden" aria-hidden="true" />
 
         <Link to="/" className="min-w-0 text-center sm:text-left">
-          <span className="block text-[28px] sm:text-2xl font-extrabold uppercase tracking-[0.08em] sm:tracking-normal text-[#111827] sm:text-white leading-tight">
+          <span className="block text-[24px] min-[380px]:text-[28px] sm:text-2xl font-extrabold uppercase tracking-[0.08em] sm:tracking-normal text-[#111827] sm:text-white leading-tight">
             ArunVerse
           </span>
-          <span className="hidden sm:block text-xs sm:text-sm text-[#febd69] leading-tight">
+          <span className="block text-[11px] sm:text-sm font-semibold text-[#b45309] sm:text-[#febd69] leading-tight">
             Products Worth Your Click
           </span>
         </Link>
@@ -49,16 +39,6 @@ const Navbar = () => {
               <path d="m16.5 16.5 4 4" />
             </svg>
           </button>
-          <Link
-            to="/admin/login"
-            className="flex h-11 w-9 items-center justify-center text-[#111827] sm:hidden"
-            aria-label="Admin"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 8h12l1 13H5L6 8Z" />
-              <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-            </svg>
-          </Link>
           {isAdmin && (
             <>
               <Link to="/admin" className="hidden sm:inline-flex min-h-10 px-3 sm:px-4 py-2 text-sm sm:text-base text-white hover:text-[#febd69] transition">
