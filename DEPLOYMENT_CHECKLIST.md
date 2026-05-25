@@ -20,6 +20,7 @@
 - [ ] Set environment variables in Render:
   - [ ] `JWT_SECRET` = your secret key
   - [ ] `ADMIN_PASSWORD` = your admin password
+  - [ ] `DATABASE_URL` = your Supabase/Neon Postgres connection string
   - [ ] `CORS_ORIGIN` = https://arunverse.com,https://www.arunverse.com,https://*.vercel.app
 - [ ] Test backend: curl https://your-render-url/api/products
 
@@ -79,6 +80,7 @@
 
 - [ ] Changed admin password from "admin123"
 - [ ] Generated and set strong JWT_SECRET
+- [ ] Set DATABASE_URL so added products persist
 - [ ] HTTPS enabled on both frontend and backend
 - [ ] CORS_ORIGIN configured for your frontend domain
 - [ ] Environment variables are set (not in code)
