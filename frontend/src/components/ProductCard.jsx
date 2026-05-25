@@ -16,7 +16,7 @@ const ProductCard = ({ product }) => {
       {/* Image Container */}
       <button
         type="button"
-        className="relative block aspect-square w-full overflow-hidden bg-[#f2f2f2] text-left cursor-pointer sm:aspect-auto sm:h-52 md:h-64"
+        className="relative block w-full h-48 overflow-hidden bg-[#f2f2f2] text-left cursor-pointer sm:h-52 md:h-64"
         onClick={handleClick}
         aria-label={`View ${product.title}`}
       >
