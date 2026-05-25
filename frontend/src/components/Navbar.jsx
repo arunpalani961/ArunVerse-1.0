@@ -14,16 +14,22 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white sm:bg-[#131921] border-b border-gray-200 sm:border-[#febd69]/40 shadow-sm sm:shadow-md">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 h-[76px] sm:h-auto sm:py-3 grid grid-cols-[44px_1fr_44px] sm:flex items-center justify-between gap-3">
-        <span className="sm:hidden" aria-hidden="true" />
-
-        <Link to="/" className="min-w-0 text-center sm:text-left">
-          <span className="block text-[24px] min-[380px]:text-[28px] sm:text-2xl font-extrabold uppercase tracking-[0.08em] sm:tracking-normal text-[#111827] sm:text-white leading-tight">
-            ArunVerse
-          </span>
-          <span className="block text-[11px] sm:text-sm font-semibold text-[#b45309] sm:text-[#febd69] leading-tight">
-            Products Worth Your Click
+    <nav className="sticky top-0 z-50 bg-[#fbfaf6] sm:bg-[#131921] border-b border-gray-200 sm:border-[#febd69]/40 shadow-sm sm:shadow-md">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 h-[76px] sm:h-auto sm:py-3 flex items-center justify-between gap-3">
+        <Link to="/" className="flex min-w-0 items-center gap-2 text-left">
+          <img
+            src="/arunverse-logo.svg"
+            alt=""
+            className="h-12 w-12 shrink-0 sm:h-10 sm:w-10"
+            aria-hidden="true"
+          />
+          <span className="min-w-0">
+            <span className="block text-[21px] min-[380px]:text-[24px] sm:text-2xl font-black uppercase tracking-[0.04em] text-[#111827] sm:text-white leading-none">
+              ArunVerse
+            </span>
+            <span className="block text-[11px] sm:text-sm font-semibold text-[#b45309] sm:text-[#febd69] leading-tight">
+              Products Worth Your Click
+            </span>
           </span>
         </Link>
         

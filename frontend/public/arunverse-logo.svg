@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">ArunVerse AV mark</title>
+  <desc id="desc">A minimal black AV monogram on a warm off-white background.</desc>
+  <rect width="128" height="128" rx="24" fill="#fbfaf6"/>
+  <g fill="#151515">
+    <path d="M30 97h14.5l27-66H57L30 97Z"/>
+    <path d="M50 80h34l-5.5-13H55.5L50 80Z"/>
+    <path d="M59 31h15l13 31 16-31h15L88 97 59 31Z"/>
+    <path d="M84 97h15l-9.5-22-8 17 2.5 5Z"/>
+    <path d="M22 54h15l8 18H30L22 54Z"/>
+    <path d="M99 75h14l7 16h-14l-7-16Z"/>
+  </g>
+</svg>
