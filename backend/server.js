@@ -121,6 +121,7 @@ const mapProduct = (product) => ({
   link: product.link,
   category: product.category,
   clicks: product.clicks || 0,
+  displayOrder: product.display_order || product.displayOrder || 0,
   createdAt: product.createdAt || product.created_at,
 });
 
@@ -147,6 +148,7 @@ const initDatabase = async () => {
       link TEXT NOT NULL,
       category TEXT NOT NULL,
       clicks INTEGER NOT NULL DEFAULT 0 CHECK (clicks >= 0),
+      display_order INTEGER NOT NULL DEFAULT 0,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
@@ -168,8 +170,8 @@ const initDatabase = async () => {
   if (rows[0].count === 0) {
     for (const product of products) {
       await pool.query(
-        `INSERT INTO products (id, title, description, image, link, category, clicks, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        `INSERT INTO products (id, title, description, image, link, category, clicks, display_order, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
         [
           product.id,
           product.title,
@@ -178,6 +180,7 @@ const initDatabase = async () => {
           product.link,
           product.category,
           product.clicks,
+          product.displayOrder || product.id,
           product.createdAt,
         ]
       );
@@ -201,6 +204,7 @@ const initDatabase = async () => {
 };
 
 const PRODUCT_SORTS = {
+  custom: { memory: (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0) || a.id - b.id, sql: 'display_order ASC, id ASC' },
   newest: { memory: (a, b) => new Date(b.createdAt) - new Date(a.createdAt) || b.id - a.id, sql: 'created_at DESC, id DESC' },
   oldest: { memory: (a, b) => new Date(a.createdAt) - new Date(b.createdAt) || a.id - b.id, sql: 'created_at ASC, id ASC' },
   title_asc: { memory: (a, b) => a.title.localeCompare(b.title) || a.id - b.id, sql: 'LOWER(title) ASC, id ASC' },
@@ -211,8 +215,8 @@ const PRODUCT_SORTS = {
   clicks_asc: { memory: (a, b) => (a.clicks || 0) - (b.clicks || 0) || a.id - b.id, sql: 'clicks ASC, id ASC' },
 };
 
-const getProducts = async ({ page, limit, category, search, sort = 'newest' }) => {
-  const safeSort = PRODUCT_SORTS[sort] ? sort : 'newest';
+const getProducts = async ({ page, limit, category, search, sort = 'custom' }) => {
+  const safeSort = PRODUCT_SORTS[sort] ? sort : 'custom';
 
   if (!pool) {
     let filtered = products;
@@ -261,7 +265,7 @@ const getProducts = async ({ page, limit, category, search, sort = 'newest' }) =
 
   values.push(limit, (page - 1) * limit);
   const listResult = await pool.query(
-    `SELECT id, title, description, image, link, category, clicks, created_at
+    `SELECT id, title, description, image, link, category, clicks, display_order, created_at
      FROM products
      ${whereSql}
      ORDER BY ${PRODUCT_SORTS[safeSort].sql}
@@ -284,7 +288,7 @@ const getProductById = async (id) => {
   }
 
   const { rows } = await pool.query(
-    'SELECT id, title, description, image, link, category, clicks, created_at FROM products WHERE id = $1',
+    'SELECT id, title, description, image, link, category, clicks, display_order, created_at FROM products WHERE id = $1',
     [id]
   );
   return rows[0] ? mapProduct(rows[0]) : null;
@@ -494,10 +498,30 @@ const updateProduct = async (id, updates) => {
     `UPDATE products
      SET ${fields.join(', ')}
      WHERE id = $${values.length}
-     RETURNING id, title, description, image, link, category, clicks, created_at`,
+     RETURNING id, title, description, image, link, category, clicks, display_order, created_at`,
     values
   );
   return rows[0] ? mapProduct(rows[0]) : null;
+};
+
+const updateDisplayOrder = async (orders) => {
+  if (!pool) {
+    for (const { id, displayOrder } of orders) {
+      const product = products.find(p => p.id === id);
+      if (product) {
+        product.displayOrder = displayOrder;
+      }
+    }
+    return { success: true };
+  }
+
+  for (const { id, displayOrder } of orders) {
+    await pool.query(
+      'UPDATE products SET display_order = $1 WHERE id = $2',
+      [displayOrder, id]
+    );
+  }
+  return { success: true };
 };
 
 const deleteProduct = async (id) => {
@@ -538,8 +562,9 @@ app.get('/api/products', runAsync(async (req, res) => {
   const limit = parseInt(req.query.limit) || 12;
   const category = req.query.category;
   const search = req.query.search;
+  const sort = req.query.sort;
 
-  const result = await getProducts({ page, limit, category, search });
+  const result = await getProducts({ page, limit, category, search, sort });
   res.json(result);
 }));
 
@@ -659,6 +684,19 @@ app.delete('/api/admin/products/:id', verifyAdmin, runAsync(async (req, res) => 
   }
 
   res.json({ message: 'Product deleted', product: deleted });
+}));
+
+// Update product display order
+app.post('/api/admin/products/reorder', verifyAdmin, runAsync(async (req, res) => {
+  const { orders } = req.body;
+  if (!Array.isArray(orders)) {
+    const error = new Error('Orders must be an array');
+    error.status = 400;
+    throw error;
+  }
+
+  await updateDisplayOrder(orders);
+  res.json({ success: true, message: 'Display order updated' });
 }));
 
 app.use((error, req, res, next) => {

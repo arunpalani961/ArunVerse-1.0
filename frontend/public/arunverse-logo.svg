@@ -1,13 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">ArunVerse AV mark</title>
-  <desc id="desc">A minimal black AV monogram on a warm off-white background.</desc>
-  <rect width="128" height="128" rx="24" fill="#fbfaf6"/>
-  <g fill="#151515">
-    <path d="M30 97h14.5l27-66H57L30 97Z"/>
-    <path d="M50 80h34l-5.5-13H55.5L50 80Z"/>
-    <path d="M59 31h15l13 31 16-31h15L88 97 59 31Z"/>
-    <path d="M84 97h15l-9.5-22-8 17 2.5 5Z"/>
-    <path d="M22 54h15l8 18H30L22 54Z"/>
-    <path d="M99 75h14l7 16h-14l-7-16Z"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" role="img" aria-labelledby="title desc">
+  <defs>
+    <linearGradient id="bagGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <title id="title">ArunVerse Logo</title>
+  <desc id="desc">Orange shopping bag with blue accents and ArunVerse text</desc>
+  
+  <!-- Orbital ring 1 -->
+  <ellipse cx="50" cy="60" rx="45" ry="40" fill="none" stroke="#0066CC" stroke-width="5" opacity="0.5" transform="rotate(-15 50 60)"/>
+  
+  <!-- Shopping bag body -->
+  <path d="M 30 70 L 40 35 Q 42 28 50 28 L 60 28 Q 68 28 70 35 L 80 70 L 80 105 Q 80 115 70 115 L 30 115 Q 20 115 20 105 Z" fill="url(#bagGradient)" stroke="#0066CC" stroke-width="2"/>
+  
+  <!-- Handle -->
+  <path d="M 42 35 Q 42 15 50 15 Q 58 15 58 35" fill="none" stroke="#0066CC" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 44 33 Q 44 18 50 18 Q 56 18 56 33" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  
+  <!-- Sparkles -->
+  <circle cx="20" cy="35" r="2.5" fill="#0066CC"/>
+  <circle cx="80" cy="45" r="2" fill="#FFD700"/>
+  
+  <!-- ArunVerse Text -->
+  <text x="110" y="80" font-size="54" font-weight="700" fill="#0066CC" font-family="'Segoe UI', Arial, sans-serif" letter-spacing="-1">ArunVerse</text>
 </svg>

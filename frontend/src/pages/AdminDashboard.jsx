@@ -46,6 +46,7 @@ const AdminDashboard = () => {
     pages: 1,
     currentPage: 1,
   });
+  const [displayOrderMap, setDisplayOrderMap] = useState({});
   const navigate = useNavigate();
 
   const categoryNames = useMemo(
@@ -201,6 +202,30 @@ const AdminDashboard = () => {
         if (!handleAuthError(requestError)) {
           setError(requestError.response?.data?.message || 'Error deleting product.');
         }
+      }
+    }
+  };
+
+  const handleSaveDisplayOrder = async () => {
+    try {
+      const orders = products
+        .map(p => ({
+          id: p.id,
+          displayOrder: displayOrderMap[p.id] !== undefined ? displayOrderMap[p.id] : (p.displayOrder || 0)
+        }))
+        .filter(item => displayOrderMap[item.id] !== undefined);
+
+      if (orders.length > 0) {
+        await api.post('/admin/products/reorder', { orders });
+        setDisplayOrderMap({});
+        await refreshDashboard();
+        alert('Display order saved successfully!');
+      } else {
+        alert('No changes to save');
+      }
+    } catch (requestError) {
+      if (!handleAuthError(requestError)) {
+        setError(requestError.response?.data?.message || 'Error saving display order.');
       }
     }
   };
@@ -435,6 +460,14 @@ const AdminDashboard = () => {
                       <option key={limit} value={limit}>{limit} / page</option>
                     ))}
                   </select>
+                  {Object.keys(displayOrderMap).length > 0 && (
+                    <button
+                      onClick={handleSaveDisplayOrder}
+                      className="px-4 py-2 bg-[#28a745] text-white rounded hover:bg-[#218838] transition font-semibold text-sm"
+                    >
+                      Save Display Order
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -445,13 +478,14 @@ const AdminDashboard = () => {
                       <th className="px-6 py-3 text-left text-sm font-semibold text-white">Title</th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-white">Category</th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-white">Clicks</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">Display Order</th>
                       <th className="px-6 py-3 text-left text-sm font-semibold text-white">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {productsLoading ? (
                       <tr>
-                        <td colSpan="4" className="px-6 py-10 text-center text-gray-600">Loading products...</td>
+                        <td colSpan="5" className="px-6 py-10 text-center text-gray-600">Loading products...</td>
                       </tr>
                     ) : products.length > 0 ? (
                       products.map((product) => (
@@ -463,6 +497,14 @@ const AdminDashboard = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-[#b45309]">{product.clicks || 0}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <input
+                              type="number"
+                              value={displayOrderMap[product.id] !== undefined ? displayOrderMap[product.id] : (product.displayOrder || 0)}
+                              onChange={(e) => setDisplayOrderMap({...displayOrderMap, [product.id]: parseInt(e.target.value) || 0})}
+                              className="w-20 px-2 py-1 border border-gray-300 rounded text-center"
+                            />
+                          </td>
                           <td className="px-6 py-4 text-sm space-x-2">
                             <button
                               onClick={() => handleEdit(product)}
@@ -481,7 +523,7 @@ const AdminDashboard = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="px-6 py-10 text-center text-gray-600">No products found</td>
+                        <td colSpan="5" className="px-6 py-10 text-center text-gray-600">No products found</td>
                       </tr>
                     )}
                   </tbody>

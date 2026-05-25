@@ -113,7 +113,7 @@ const Home = () => {
             placeholder="Search products..."
             value={search}
             onChange={handleSearchChange}
-            className="w-full px-4 sm:px-5 py-3 bg-white border-2 border-transparent rounded text-[#111827] placeholder-gray-500 focus:outline-none focus:border-[#ff9900] transition"
+            className="w-full px-4 sm:px-5 py-3 bg-white border-2 border-gray-300 rounded text-[#111827] placeholder-gray-500 focus:outline-none focus:border-[#ff9900] transition"
           />
         </div>
       </div>
@@ -217,7 +217,7 @@ const Home = () => {
       </div>
 
       {/* Mobile Bottom Controls */}
-      <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-gray-200 bg-white sm:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-gray-200 bg-white sm:hidden">
         <button
           type="button"
           onClick={handleSortChange}
@@ -237,21 +237,9 @@ const Home = () => {
             setShowMobileCategories((isVisible) => !isVisible);
             setShowMobileSearch(false);
           }}
-          className="min-h-16 border-r border-gray-200 text-sm font-extrabold uppercase tracking-wide"
+          className="min-h-16 text-sm font-extrabold uppercase tracking-wide"
         >
           Category
-        </button>
-        <button
-          type="button"
-          onClick={toggleMobileSearch}
-          className="flex min-h-16 items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-wide"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M4 6h16" />
-            <path d="M7 12h10" />
-            <path d="M10 18h4" />
-          </svg>
-          <span>Filter</span>
         </button>
       </div>
     </div>
