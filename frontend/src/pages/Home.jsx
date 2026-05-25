@@ -10,10 +10,9 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState('newest');
-  const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [showMobileCategories, setShowMobileCategories] = useState(false);
+  const [showMobileCategories, setShowMobileCategories] = useState(true);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchInputRef = useRef(null);
   const sortOptions = [
@@ -60,7 +59,6 @@ const Home = () => {
         };
         const res = await api.get('/products', { params });
         setProducts(res.data.products);
-        setTotalProducts(res.data.total || res.data.products.length);
         setTotalPages(res.data.pages);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -89,7 +87,6 @@ const Home = () => {
     setCurrentPage(1);
   };
 
-  const selectedCategoryLabel = category === 'all' ? 'Products' : category;
   const selectedSortLabel = sortOptions.find((option) => option.value === sort)?.label || 'Sort';
 
   const toggleMobileSearch = () => {
@@ -105,34 +102,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white sm:bg-[#eaeded] text-[#111827] overflow-x-hidden">
-
-      {/* Mobile Catalog Header */}
-      <div className="sm:hidden">
-        <div className="bg-[#111111] py-5 text-center text-white">
-          <h1 className="text-2xl font-bold uppercase tracking-wide">
-            {selectedCategoryLabel}
-          </h1>
-          <p className="mt-1 text-sm uppercase tracking-wide text-white/70">
-            {totalProducts} Products
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 shadow-sm">
-          <div className="flex min-w-0 items-center gap-3">
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 shrink-0 fill-[#171717]">
-              <path d="M12 2.25A7.25 7.25 0 0 0 4.75 9.5c0 5.45 6.2 11.74 6.47 12a1.08 1.08 0 0 0 1.56 0c.27-.26 6.47-6.55 6.47-12A7.25 7.25 0 0 0 12 2.25Zm0 10.25a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
-            </svg>
-            <span className="truncate text-lg text-[#202124]">No location found</span>
-          </div>
-          <button
-            type="button"
-            onClick={toggleMobileSearch}
-            className="min-h-11 shrink-0 text-xs font-extrabold uppercase tracking-wide underline decoration-2 underline-offset-4"
-          >
-            Search
-          </button>
-        </div>
-      </div>
 
       {/* Search Section */}
       <div className={`${showMobileSearch ? 'block' : 'hidden'} sm:block max-w-7xl mx-auto px-5 sm:px-4 pt-4 sm:pt-6 md:pt-10 mb-4 sm:mb-6 md:mb-8`}>
