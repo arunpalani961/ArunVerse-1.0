@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../api/config';
 import ProductCard from '../components/ProductCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -9,8 +9,18 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
+  const [sort, setSort] = useState('newest');
+  const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showMobileCategories, setShowMobileCategories] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const searchInputRef = useRef(null);
+  const sortOptions = [
+    { value: 'newest', label: 'Newest' },
+    { value: 'title_asc', label: 'A-Z' },
+    { value: 'clicks_desc', label: 'Popular' },
+  ];
 
   // Fetch categories
   useEffect(() => {
@@ -25,6 +35,17 @@ const Home = () => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const openSearch = () => {
+      setShowMobileSearch(true);
+      setShowMobileCategories(false);
+      window.setTimeout(() => searchInputRef.current?.focus(), 0);
+    };
+
+    window.addEventListener('openProductSearch', openSearch);
+    return () => window.removeEventListener('openProductSearch', openSearch);
+  }, []);
+
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
@@ -33,11 +54,13 @@ const Home = () => {
         const params = {
           page: currentPage,
           limit: 12,
+          sort,
           ...(search && { search }),
           ...(category !== 'all' && { category }),
         };
         const res = await api.get('/products', { params });
         setProducts(res.data.products);
+        setTotalProducts(res.data.total || res.data.products.length);
         setTotalPages(res.data.pages);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -46,7 +69,7 @@ const Home = () => {
       }
     };
     fetchProducts();
-  }, [search, category, currentPage]);
+  }, [search, category, sort, currentPage]);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -56,15 +79,67 @@ const Home = () => {
   const handleCategoryChange = (cat) => {
     setCategory(cat);
     setCurrentPage(1);
+    setShowMobileCategories(false);
+  };
+
+  const handleSortChange = () => {
+    const currentIndex = sortOptions.findIndex((option) => option.value === sort);
+    const nextSort = sortOptions[(currentIndex + 1) % sortOptions.length].value;
+    setSort(nextSort);
+    setCurrentPage(1);
+  };
+
+  const selectedCategoryLabel = category === 'all' ? 'Products' : category;
+  const selectedSortLabel = sortOptions.find((option) => option.value === sort)?.label || 'Sort';
+
+  const toggleMobileSearch = () => {
+    setShowMobileSearch((isVisible) => {
+      const nextVisible = !isVisible;
+      if (nextVisible) {
+        window.setTimeout(() => searchInputRef.current?.focus(), 0);
+      }
+      return nextVisible;
+    });
+    setShowMobileCategories(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#eaeded] text-[#111827] overflow-x-hidden">
+    <div className="min-h-screen bg-white sm:bg-[#eaeded] text-[#111827] overflow-x-hidden">
+
+      {/* Mobile Catalog Header */}
+      <div className="sm:hidden">
+        <div className="bg-[#111111] py-5 text-center text-white">
+          <h1 className="text-2xl font-bold uppercase tracking-wide">
+            {selectedCategoryLabel}
+          </h1>
+          <p className="mt-1 text-sm uppercase tracking-wide text-white/70">
+            {totalProducts} Products
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 shadow-sm">
+          <div className="flex min-w-0 items-center gap-3">
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 shrink-0 fill-[#171717]">
+              <path d="M12 2.25A7.25 7.25 0 0 0 4.75 9.5c0 5.45 6.2 11.74 6.47 12a1.08 1.08 0 0 0 1.56 0c.27-.26 6.47-6.55 6.47-12A7.25 7.25 0 0 0 12 2.25Zm0 10.25a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+            </svg>
+            <span className="truncate text-lg text-[#202124]">No location found</span>
+          </div>
+          <button
+            type="button"
+            onClick={toggleMobileSearch}
+            className="min-h-11 shrink-0 text-xs font-extrabold uppercase tracking-wide underline decoration-2 underline-offset-4"
+          >
+            Search
+          </button>
+        </div>
+      </div>
 
       {/* Search Section */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 md:pt-10 mb-4 sm:mb-6 md:mb-8">
-        <div className="bg-[#232f3e] rounded-md shadow p-3 md:p-4">
+      <div className={`${showMobileSearch ? 'block' : 'hidden'} sm:block max-w-7xl mx-auto px-5 sm:px-4 pt-4 sm:pt-6 md:pt-10 mb-4 sm:mb-6 md:mb-8`}>
+        <div className="bg-white sm:bg-[#232f3e] sm:rounded-md sm:shadow sm:p-3 md:p-4">
           <input
+            id="product-search"
+            ref={searchInputRef}
             type="text"
             placeholder="Search products..."
             value={search}
@@ -75,13 +150,13 @@ const Home = () => {
       </div>
 
       {/* Category Filter */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 mb-5 sm:mb-7 md:mb-10">
+      <div className={`${showMobileCategories ? 'block' : 'hidden'} sm:block max-w-7xl mx-auto px-5 sm:px-4 mb-5 sm:mb-7 md:mb-10`}>
         <div className="flex gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:gap-3 sm:overflow-visible sm:pb-0">
           <button
             onClick={() => handleCategoryChange('all')}
-            className={`min-h-11 shrink-0 px-5 py-2 rounded-full text-sm sm:text-base transition ${
+            className={`min-h-11 shrink-0 px-5 py-2 rounded-none sm:rounded-full text-sm sm:text-base transition ${
               category === 'all'
-                ? 'bg-[#ff9900] text-[#111827] font-semibold'
+                ? 'bg-[#111827] text-white sm:bg-[#ff9900] sm:text-[#111827] font-semibold'
                 : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
             }`}
           >
@@ -91,9 +166,9 @@ const Home = () => {
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`min-h-11 shrink-0 px-5 py-2 rounded-full text-sm sm:text-base transition ${
+              className={`min-h-11 shrink-0 px-5 py-2 rounded-none sm:rounded-full text-sm sm:text-base transition ${
                 category === cat
-                  ? 'bg-[#ff9900] text-[#111827] font-semibold'
+                  ? 'bg-[#111827] text-white sm:bg-[#ff9900] sm:text-[#111827] font-semibold'
                   : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
               }`}
             >
@@ -104,14 +179,14 @@ const Home = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 pb-14 sm:pb-20">
+      <div className="max-w-7xl mx-auto px-5 sm:px-4 pb-28 sm:pb-20 pt-6 sm:pt-0">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 sm:gap-5 lg:gap-6">
             <LoadingSkeleton count={12} />
           </div>
         ) : products.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-6 mb-8 sm:mb-12">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 sm:gap-5 lg:gap-6 mb-8 sm:mb-12">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -119,7 +194,7 @@ const Home = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible sm:pb-0">
+              <div className="hidden sm:flex justify-center items-center gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible sm:pb-0">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
@@ -170,6 +245,45 @@ const Home = () => {
             <p className="text-xl text-gray-600">No products found</p>
           </div>
         )}
+      </div>
+
+      {/* Mobile Bottom Controls */}
+      <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 border-t border-gray-200 bg-white sm:hidden">
+        <button
+          type="button"
+          onClick={handleSortChange}
+          className="flex min-h-16 items-center justify-center gap-2 border-r border-gray-200 text-sm font-extrabold uppercase tracking-wide"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 5v14" />
+            <path d="m4 9 4-4 4 4" />
+            <path d="M16 19V5" />
+            <path d="m12 15 4 4 4-4" />
+          </svg>
+          <span>{selectedSortLabel}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setShowMobileCategories((isVisible) => !isVisible);
+            setShowMobileSearch(false);
+          }}
+          className="min-h-16 border-r border-gray-200 text-sm font-extrabold uppercase tracking-wide"
+        >
+          Category
+        </button>
+        <button
+          type="button"
+          onClick={toggleMobileSearch}
+          className="flex min-h-16 items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-wide"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M4 6h16" />
+            <path d="M7 12h10" />
+            <path d="M10 18h4" />
+          </svg>
+          <span>Filter</span>
+        </button>
       </div>
     </div>
   );
