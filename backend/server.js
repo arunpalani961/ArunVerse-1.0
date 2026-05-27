@@ -97,6 +97,7 @@ let products = [
 
 let nextId = 5;
 let categories = [...new Set(products.map(product => product.category))].sort((a, b) => a.localeCompare(b));
+let clickLog = []; // In-memory click tracking for non-database mode
 
 const normalizeCategory = (name) => name.trim();
 const categoryExists = async (name) => {
@@ -177,6 +178,14 @@ const initDatabase = async () => {
     )
   `);
 
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS click_log (
+      id SERIAL PRIMARY KEY,
+      product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+      clicked_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
   await pool.query('CREATE INDEX IF NOT EXISTS products_category_idx ON products (LOWER(category))');
   await pool.query('CREATE INDEX IF NOT EXISTS products_created_at_idx ON products (created_at DESC)');
   await pool.query('CREATE INDEX IF NOT EXISTS products_clicks_idx ON products (clicks DESC)');
@@ -220,6 +229,7 @@ const initDatabase = async () => {
 };
 
 const PRODUCT_SORTS = {
+  display_order: { memory: (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0) || a.id - b.id, sql: 'display_order ASC, id ASC' },
   custom: { memory: (a, b) => (a.displayOrder || 0) - (b.displayOrder || 0) || a.id - b.id, sql: 'display_order ASC, id ASC' },
   newest: { memory: (a, b) => new Date(b.createdAt) - new Date(a.createdAt) || b.id - a.id, sql: 'created_at DESC, id DESC' },
   oldest: { memory: (a, b) => new Date(a.createdAt) - new Date(b.createdAt) || a.id - b.id, sql: 'created_at ASC, id ASC' },
@@ -348,8 +358,16 @@ const incrementProductClick = async (id) => {
     const product = products.find(p => p.id === id);
     if (!product) return null;
     product.clicks = (product.clicks || 0) + 1;
+    // Log click to in-memory storage
+    clickLog.push({ product_id: id, clicked_at: new Date() });
     return product.clicks;
   }
+
+  // Log the click with timestamp and increment click counter
+  await pool.query(
+    'INSERT INTO click_log (product_id) VALUES ($1)',
+    [id]
+  );
 
   const { rows } = await pool.query(
     'UPDATE products SET clicks = clicks + 1 WHERE id = $1 RETURNING clicks',
@@ -666,6 +684,61 @@ app.get('/api/admin/analytics', verifyAdmin, runAsync(async (req, res) => {
 app.get('/api/admin/status', verifyAdmin, (req, res) => {
   res.json(getStorageStatus());
 });
+
+// Get daily click analytics for admin dashboard
+app.get('/api/admin/click-analytics', verifyAdmin, runAsync(async (req, res) => {
+  if (!pool) {
+    // In-memory mode: process clickLog array
+    const dailyStats = {};
+    
+    for (const { clicked_at } of clickLog) {
+      const dateStr = new Date(clicked_at).toISOString().split('T')[0]; // YYYY-MM-DD format
+      dailyStats[dateStr] = (dailyStats[dateStr] || 0) + 1;
+    }
+
+    // Convert to sorted array with cumulative count
+    const dates = Object.keys(dailyStats).sort();
+    let cumulativeCount = 0;
+    const dailyClicks = dates.map(date => {
+      cumulativeCount += dailyStats[date];
+      return {
+        date,
+        clicks: dailyStats[date],
+        cumulativeClicks: cumulativeCount,
+      };
+    });
+
+    res.json({ dailyClicks });
+    return;
+  }
+
+  try {
+    const { rows } = await pool.query(`
+      SELECT 
+        DATE(clicked_at) as click_date,
+        COUNT(*) as click_count
+      FROM click_log
+      GROUP BY DATE(clicked_at)
+      ORDER BY click_date ASC
+    `);
+
+    // Add cumulative count
+    let cumulativeCount = 0;
+    const dailyClicks = rows.map(row => {
+      cumulativeCount += row.click_count;
+      return {
+        date: row.click_date,
+        clicks: parseInt(row.click_count),
+        cumulativeClicks: cumulativeCount,
+      };
+    });
+
+    res.json({ dailyClicks });
+  } catch (error) {
+    console.error('Error fetching click analytics:', error);
+    res.json({ dailyClicks: [] });
+  }
+}));
 
 // Get products for admin dashboard
 app.get('/api/admin/products', verifyAdmin, runAsync(async (req, res) => {

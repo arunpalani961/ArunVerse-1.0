@@ -11,6 +11,7 @@ const emptyProductForm = {
 };
 
 const sortOptions = [
+  { value: 'display_order', label: 'Display Order' },
   { value: 'newest', label: 'Newest first' },
   { value: 'oldest', label: 'Oldest first' },
   { value: 'title_asc', label: 'Title A-Z' },
@@ -26,6 +27,7 @@ const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [analytics, setAnalytics] = useState(null);
+  const [clickAnalytics, setClickAnalytics] = useState(null);
   const [storageStatus, setStorageStatus] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -38,7 +40,7 @@ const AdminDashboard = () => {
   const [productQuery, setProductQuery] = useState({
     page: 1,
     limit: 10,
-    sort: 'newest',
+    sort: 'display_order',
     search: '',
   });
   const [productPagination, setProductPagination] = useState({
@@ -71,6 +73,15 @@ const AdminDashboard = () => {
   const fetchStatus = useCallback(async () => {
     const res = await api.get('/admin/status');
     setStorageStatus(res.data);
+  }, []);
+
+  const fetchClickAnalytics = useCallback(async () => {
+    try {
+      const res = await api.get('/admin/click-analytics');
+      setClickAnalytics(res.data);
+    } catch (error) {
+      console.error('Error fetching click analytics:', error);
+    }
   }, []);
 
   const fetchCategories = useCallback(async () => {
@@ -115,7 +126,7 @@ const AdminDashboard = () => {
       setLoading(true);
       setError('');
       try {
-        await Promise.all([fetchAnalytics(), fetchCategories(), fetchStatus()]);
+        await Promise.all([fetchAnalytics(), fetchCategories(), fetchStatus(), fetchClickAnalytics()]);
       } catch (requestError) {
         if (!handleAuthError(requestError)) {
           setError('Unable to load dashboard data.');
@@ -126,7 +137,7 @@ const AdminDashboard = () => {
     };
 
     loadDashboard();
-  }, [fetchAnalytics, fetchCategories, fetchStatus, handleAuthError]);
+  }, [fetchAnalytics, fetchCategories, fetchStatus, fetchClickAnalytics, handleAuthError]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -159,7 +170,7 @@ const AdminDashboard = () => {
   }, [handleAuthError, productQuery]);
 
   const refreshDashboard = async () => {
-    await Promise.all([fetchAnalytics(), fetchProducts(), fetchCategories(), fetchStatus()]);
+    await Promise.all([fetchAnalytics(), fetchProducts(), fetchCategories(), fetchStatus(), fetchClickAnalytics()]);
   };
 
   const resetProductForm = () => {
@@ -349,6 +360,15 @@ const AdminDashboard = () => {
               }`}
             >
               Categories
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('analytics')}
+              className={`px-4 py-2 rounded text-sm font-semibold transition ${
+                activeTab === 'analytics' ? 'bg-[#232f3e] text-white' : 'text-[#111827] hover:bg-[#f7fafa]'
+              }`}
+            >
+              Click Analytics
             </button>
           </div>
 
@@ -600,6 +620,48 @@ const AdminDashboard = () => {
                 <div className="px-4 py-6 text-center text-gray-600">No categories added yet</div>
               )}
             </div>
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
+          <div className="bg-white rounded-md border border-gray-200 p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">Click Analytics</h2>
+              <p className="text-sm text-gray-600">Daily click tracking and cumulative click count.</p>
+            </div>
+
+            {clickAnalytics && clickAnalytics.dailyClicks.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="border-b border-gray-200 bg-[#232f3e]">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">Date</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">Clicks Today</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-white">Cumulative Clicks</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clickAnalytics.dailyClicks.map((stat, index) => (
+                      <tr key={index} className="border-b border-gray-200 hover:bg-[#f7fafa]">
+                        <td className="px-6 py-4 text-sm font-medium text-[#111827]">
+                          {new Date(stat.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <span className="px-3 py-1 bg-[#e3f2fd] text-[#0f566b] rounded-full text-xs font-medium">
+                            {stat.clicks}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm font-semibold text-[#b45309]">{stat.cumulativeClicks}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="px-6 py-10 text-center text-gray-600">
+                No click data available yet. Products will be tracked as they are clicked.
+              </div>
+            )}
           </div>
         )}
       </div>
