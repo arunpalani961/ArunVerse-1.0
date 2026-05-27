@@ -7,6 +7,7 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState('newest');
@@ -15,6 +16,7 @@ const Home = () => {
   const [showMobileCategories, setShowMobileCategories] = useState(true);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const searchInputRef = useRef(null);
+  const observerTarget = useRef(null);
   const sortOptions = [
     { value: 'newest', label: 'Newest' },
     { value: 'title_asc', label: 'A-Z' },
@@ -48,7 +50,12 @@ const Home = () => {
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true);
+      const isNewSearch = currentPage === 1;
+      if (isNewSearch) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
       try {
         const params = {
           page: currentPage,
@@ -58,12 +65,20 @@ const Home = () => {
           ...(category !== 'all' && { category }),
         };
         const res = await api.get('/products', { params });
-        setProducts(res.data.products);
+        if (isNewSearch) {
+          setProducts(res.data.products);
+        } else {
+          setProducts(prev => [...prev, ...res.data.products]);
+        }
         setTotalPages(res.data.pages);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
-        setLoading(false);
+        if (isNewSearch) {
+          setLoading(false);
+        } else {
+          setLoadingMore(false);
+        }
       }
     };
     fetchProducts();
@@ -72,13 +87,37 @@ const Home = () => {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setCurrentPage(1);
+    setProducts([]);
   };
 
   const handleCategoryChange = (cat) => {
     setCategory(cat);
     setCurrentPage(1);
+    setProducts([]);
     setShowMobileCategories(false);
   };
+
+  // Infinite scroll - Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && !loading && !loadingMore && currentPage < totalPages) {
+          setCurrentPage(prev => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [loading, loadingMore, currentPage, totalPages]);
 
   const handleSortChange = () => {
     const currentIndex = sortOptions.findIndex((option) => option.value === sort);
@@ -161,51 +200,13 @@ const Home = () => {
               ))}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="hidden sm:flex justify-center items-center gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible sm:pb-0">
-                <button
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="min-h-11 shrink-0 px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
-                >
-                  Previous
-                </button>
-                
-                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setCurrentPage(pageNum)}
-                      className={`min-h-11 min-w-11 shrink-0 px-3 py-2 rounded-lg transition ${
-                        currentPage === pageNum
-                          ? 'bg-[#ff9900] text-[#111827] font-semibold'
-                          : 'bg-white text-[#111827] hover:bg-[#f7fafa] border border-gray-300'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-
-                <button
-                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="min-h-11 shrink-0 px-4 py-2 bg-white text-[#111827] border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#f7fafa] transition"
-                >
-                  Next
-                </button>
+            {/* Infinite scroll loading indicator */}
+            {currentPage < totalPages && (
+              <div ref={observerTarget} className="flex justify-center items-center py-8">
+                <div className="text-gray-600 text-sm flex items-center gap-2">
+                  <div className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-[#ff9900]"></div>
+                  Loading more products...
+                </div>
               </div>
             )}
           </>
